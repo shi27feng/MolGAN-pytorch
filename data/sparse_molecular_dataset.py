@@ -161,14 +161,14 @@ class SparseMolecularDataset():
         max_length = max_length if max_length is not None else mol.GetNumAtoms()
 
         return np.array([self.atom_encoder_m[atom.GetAtomicNum()] for atom in mol.GetAtoms()] + [0] * (
-                    max_length - mol.GetNumAtoms()), dtype=np.int32)
+                max_length - mol.GetNumAtoms()), dtype=np.int32)
 
     def _genS(self, mol, max_length=None):
 
         max_length = max_length if max_length is not None else len(Chem.MolToSmiles(mol))
 
         return np.array([self.smiles_encoder_m[c] for c in Chem.MolToSmiles(mol)] + [self.smiles_encoder_m['E']] * (
-                    max_length - len(Chem.MolToSmiles(mol))), dtype=np.int32)
+                max_length - len(Chem.MolToSmiles(mol))), dtype=np.int32)
 
     def _genF(self, mol, max_length=None):
 

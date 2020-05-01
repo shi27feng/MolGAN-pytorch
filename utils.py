@@ -245,6 +245,7 @@ class MolecularMetrics(object):
                                      np.exp(- (x - x_high) ** 2 / decay)],
                          default=np.ones_like(x))
 
+
 def mols2grid_image(mols, molsPerRow):
     mols = [e if e is not None else Chem.RWMol() for e in mols]
 

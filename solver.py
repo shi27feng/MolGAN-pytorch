@@ -4,7 +4,7 @@ import time
 import datetime
 
 import torch
-import torch.nn.functional as F
+import torch.nn.functional as fn
 from torch.autograd import Variable
 from torchvision.utils import save_image
 
@@ -158,9 +158,9 @@ class Solver(object):
     def classification_loss(self, logit, target, dataset='CelebA'):
         """Compute binary or softmax cross entropy loss."""
         if dataset == 'CelebA':
-            return F.binary_cross_entropy_with_logits(logit, target, size_average=False) / logit.size(0)
+            return fn.binary_cross_entropy_with_logits(logit, target, size_average=False) / logit.size(0)
         elif dataset == 'RaFD':
-            return F.cross_entropy(logit, target)
+            return fn.cross_entropy(logit, target)
 
     def sample_z(self, batch_size):
         return np.random.normal(0, 1, size=(batch_size, self.z_dim))
@@ -174,15 +174,15 @@ class Solver(object):
             return x if len(x) > 1 else x[0]
 
         if method == 'soft_gumbel':
-            softmax = [F.gumbel_softmax(e_logits.contiguous().view(-1,e_logits.size(-1))
-                       / temperature, hard=False).view(e_logits.size())
+            softmax = [fn.gumbel_softmax(e_logits.contiguous().view(-1, e_logits.size(-1))
+                                         / temperature, hard=False).view(e_logits.size())
                        for e_logits in listify(inputs)]
         elif method == 'hard_gumbel':
-            softmax = [F.gumbel_softmax(e_logits.contiguous().view(-1,e_logits.size(-1))
-                       / temperature, hard=True).view(e_logits.size())
+            softmax = [fn.gumbel_softmax(e_logits.contiguous().view(-1, e_logits.size(-1))
+                                         / temperature, hard=True).view(e_logits.size())
                        for e_logits in listify(inputs)]
         else:
-            softmax = [F.softmax(e_logits / temperature, -1)
+            softmax = [fn.softmax(e_logits / temperature, -1)
                        for e_logits in listify(inputs)]
 
         return [delistify(e) for e in (softmax)]

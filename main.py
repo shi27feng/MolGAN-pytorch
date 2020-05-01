@@ -6,7 +6,8 @@ from torch.backends import cudnn
 
 
 def str2bool(v):
-    return v.lower() in ('true')
+    return v.lower() in ('true',)
+
 
 def main(config):
     # For fast training.
@@ -36,8 +37,9 @@ if __name__ == '__main__':
 
     # Model configuration.
     parser.add_argument('--z_dim', type=int, default=8, help='dimension of domain labels')
-    parser.add_argument('--g_conv_dim', default=[128,256,512], help='number of conv filters in the first layer of G')
-    parser.add_argument('--d_conv_dim', type=int, default=[[128, 64], 128, [128, 64]], help='number of conv filters in the first layer of D')
+    parser.add_argument('--g_conv_dim', default=[128, 256, 512], help='number of conv filters in the first layer of G')
+    parser.add_argument('--d_conv_dim', type=int, default=[[128, 64], 128, [128, 64]],
+                        help='number of conv filters in the first layer of D')
     parser.add_argument('--g_repeat_num', type=int, default=6, help='number of residual blocks in G')
     parser.add_argument('--d_repeat_num', type=int, default=6, help='number of strided conv layers in D')
     parser.add_argument('--lambda_cls', type=float, default=1, help='weight for domain classification loss')

@@ -8,7 +8,8 @@ import random
 
 from data.sparse_molecular_dataset import SparseMolecularDataset
 
-class SparseMoleCular(data.Dataset):
+
+class SparseMolecular(data.Dataset):
     """Dataset class for the CelebA dataset."""
 
     def __init__(self, data_dir):
@@ -19,10 +20,10 @@ class SparseMoleCular(data.Dataset):
     def __getitem__(self, index):
         """Return one image and its corresponding attribute label."""
 
-        return index, self.data.data[index], self.data.smiles[index],\
-               self.data.data_S[index], self.data.data_A[index],\
-               self.data.data_X[index], self.data.data_D[index],\
-               self.data.data_F[index], self.data.data_Le[index],\
+        return index, self.data.data[index], self.data.smiles[index], \
+               self.data.data_S[index], self.data.data_A[index], \
+               self.data.data_X[index], self.data.data_D[index], \
+               self.data.data_F[index], self.data.data_Le[index], \
                self.data.data_Lv[index]
 
     def __len__(self):
@@ -33,10 +34,10 @@ class SparseMoleCular(data.Dataset):
 def get_loader(image_dir, batch_size, mode, num_workers=1):
     """Build and return a data loader."""
 
-    dataset = SparseMoleCular(image_dir)
+    dataset = SparseMolecular(image_dir)
 
     data_loader = data.DataLoader(dataset=dataset,
                                   batch_size=batch_size,
-                                  shuffle=(mode=='train'),
+                                  shuffle=(mode == 'train'),
                                   num_workers=num_workers)
     return data_loader

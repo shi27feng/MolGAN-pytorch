@@ -2,3 +2,6 @@
 *.csv
 *.gz
 *.sdf
+/__pycache__/
+*.sparsedataset
+/data/__pycache__/

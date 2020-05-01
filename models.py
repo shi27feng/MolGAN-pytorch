@@ -7,6 +7,7 @@ from layers import GraphConvolution, GraphAggregation
 
 class ResidualBlock(nn.Module):
     """Residual Block with instance normalization."""
+
     def __init__(self, dim_in, dim_out):
         super(ResidualBlock, self).__init__()
         self.main = nn.Sequential(
@@ -22,6 +23,7 @@ class ResidualBlock(nn.Module):
 
 class Generator(nn.Module):
     """Generator network."""
+
     def __init__(self, conv_dims, z_dim, vertexes, edges, nodes, dropout):
         super(Generator, self).__init__()
 
@@ -30,7 +32,7 @@ class Generator(nn.Module):
         self.nodes = nodes
 
         layers = []
-        for c0, c1 in zip([z_dim]+conv_dims[:-1], conv_dims):
+        for c0, c1 in zip([z_dim] + conv_dims[:-1], conv_dims):
             layers.append(nn.Linear(c0, c1))
             layers.append(nn.Tanh())
             layers.append(nn.Dropout(p=dropout, inplace=True))
@@ -42,19 +44,20 @@ class Generator(nn.Module):
 
     def forward(self, x):
         output = self.layers(x)
-        edges_logits = self.edges_layer(output)\
-                       .view(-1,self.edges,self.vertexes,self.vertexes)
-        edges_logits = (edges_logits + edges_logits.permute(0,1,3,2))/2
-        edges_logits = self.dropoout(edges_logits.permute(0,2,3,1))
+        edges_logits = self.edges_layer(output) \
+            .view(-1, self.edges, self.vertexes, self.vertexes)
+        edges_logits = (edges_logits + edges_logits.permute(0, 1, 3, 2)) / 2
+        edges_logits = self.dropoout(edges_logits.permute(0, 2, 3, 1))
 
         nodes_logits = self.nodes_layer(output)
-        nodes_logits = self.dropoout(nodes_logits.view(-1,self.vertexes,self.nodes))
+        nodes_logits = self.dropoout(nodes_logits.view(-1, self.vertexes, self.nodes))
 
         return edges_logits, nodes_logits
 
 
 class Discriminator(nn.Module):
     """Discriminator network with PatchGAN."""
+
     def __init__(self, conv_dim, m_dim, b_dim, dropout):
         super(Discriminator, self).__init__()
 
@@ -65,19 +68,19 @@ class Discriminator(nn.Module):
 
         # multi dense layer
         layers = []
-        for c0, c1 in zip([aux_dim]+linear_dim[:-1], linear_dim):
-            layers.append(nn.Linear(c0,c1))
+        for c0, c1 in zip([aux_dim] + linear_dim[:-1], linear_dim):
+            layers.append(nn.Linear(c0, c1))
             layers.append(nn.Dropout(dropout))
         self.linear_layer = nn.Sequential(*layers)
 
         self.output_layer = nn.Linear(linear_dim[-1], 1)
 
     def forward(self, adj, hidden, node, activatation=None):
-        adj = adj[:,:,:,1:].permute(0,3,1,2)
+        adj = adj[:, :, :, 1:].permute(0, 3, 1, 2)
         annotations = torch.cat((hidden, node), -1) if hidden is not None else node
         h = self.gcn_layer(annotations, adj)
-        annotations = torch.cat((h, hidden, node) if hidden is not None\
-                                 else (h, node), -1)
+        annotations = torch.cat((h, hidden, node) if hidden is not None \
+                                    else (h, node), -1)
         h = self.agg_layer(annotations, torch.tanh)
         h = self.linear_layer(h)
 
